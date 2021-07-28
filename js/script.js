@@ -127,6 +127,7 @@ hideIrrelevantPaymentDivs();
 // If input for <Thing> is not valid, the parent element is given the 
 // '.not-valid' class name (and the '.valid' class is removed)
 // false is returned
+// An event listener validating each individual field on input is also created.
 
 // id is the string that will get the input field with
 // document.getElementById
@@ -149,14 +150,67 @@ function makeValidator(id,validationRegex) {
             return false;
         }
     }
+    thingInput.addEventListener('input',isValidThing);
     return isValidThing;
 }
         
 const isValidName = makeValidator("name",/^.+$/);
-const isValidEmail = makeValidator("email",/^[^@]+@[^@.]+\.com$/);
+//const isValidEmail = makeValidator("email",/^[^@]+@[^@.]+\.com$/);
 const isValidCreditCardNumber = makeValidator("cc-num",/^\d{13,16}$/);
 const isValidZip = makeValidator("zip",/^\d{5}$/);
 const isValidCVV = makeValidator("cvv",/^\d\d\d$/);
+
+// make isValidEmail() with different messages
+// depending on the error
+const emailInput = document.getElementById("email");
+const emailParentLabel = emailInput.parentElement;
+const emailHintElement = emailParentLabel.lastElementChild;
+const emailHiddenHintClass = emailHintElement.className;
+// the space in the regex means that the '-hint' in 'thing-hint hint' won't be touched
+const emailVisibleHintClass = emailHiddenHintClass.replace(/ hint/,"")
+
+function isValidEmail() {
+    function failedValidation(hint) {
+        emailParentLabel.className = "not-valid";
+        emailHintElement.className = emailVisibleHintClass;
+        emailHintElement.textContent = hint;
+    }
+    const value = emailInput.value;
+    if (!value) {
+        failedValidation("Email Address field cannot be blank");
+        return false;
+    } else if (!value.match(/^[^@]+/)) {
+        failedValidation("Email Address field cannot begin with '@'");
+        return false;
+    } else if (!value.match(/^[^@]+@/)) {
+        failedValidation("Email Address field must contain an '@'");
+        return false;
+    } else if (!value.match(/^[^@]+@.*\.com$/)) {
+        failedValidation("This form can only accept email addresses ending in '.com'");
+        return false;
+    } else if (!value.match(/^[^@]+@.+\.com$/)) {
+        failedValidation("There must be at least 1 character between '@' and '.com'");
+        return false;
+    } else if (!value.match(/^[^@]+@[^@]+\.com$/)) {
+        failedValidation("Email Address field must have only 1 '@'");
+        return false;
+    } else if (!value.match(/^[^@]+@[^@.]+\.com$/)) {
+        failedValidation("There must be no '.' characters between '@' and '.com'");
+        return false;
+    } else {
+        // The last regex is the full email validation regex, so if the program gets past the
+        // last else if statement, the email is known to be good (at least according to the
+        // requirements of this project
+        emailParentLabel.className = "valid";
+        emailHintElement.className = emailHiddenHintClass;
+        emailHintElement.textContent = "Email address must be formatted correctly";
+        return true;
+    }
+}
+emailInput.addEventListener('input',isValidEmail);
+        
+    
+
         
 
 // Checking validity of checkboxes is different, so make custom function for that
@@ -200,18 +254,17 @@ formElement.addEventListener("submit",(e) => {
 
 
 // Visible checkbox focus
+// note 'focus' and 'blur' events don't bubble,
+// would use 'focusin' and 'focusout' to build a version
+// using bubbling
 
-checkboxFieldset.addEventListener('focusin', (e) => {
-    console.log(e.target.type);
-    if (e.target.type === "checkbox") {
-        console.log("checkbox");
-        e.target.parentNode.className = "focus";
-    }
-});
+for (let i = 0; i < checkboxList.length; i++) {
+    const checkbox = checkboxList[i];
+    const checkboxParent = checkboxList[i].parentNode;
+    checkbox.addEventListener('focus', () =>  checkboxParent.className = "focus");
+    checkbox.addEventListener('blur', () => checkboxParent.className = "");
+}
 
-checkboxFieldset.addEventListener('focusout', (e) => {
-    document.querySelector("label.focus").className="";
-});
 
 
 
