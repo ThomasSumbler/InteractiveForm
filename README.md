@@ -18,7 +18,9 @@ This project adds JavaScript to a supplied HTML form, and adds the following kin
 
 ### Real-Time Error Message
 
-This form features real-time validation of forms.  This is achieved by using the [```'input'``` event listener](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event), which is triggered every time the input box is changed.  The event listener executes the validation function for the corresponding script.
+This form features real-time validation of forms.  This is achieved by using the [```'input'``` event listener](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event), which is triggered every time the input box is changed.  (Some use the ["change"](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event) event listener if they don't take text input.).  The event listener executes the validation function for the corresponding script.
+
+The Name, Email Address, Activities Registration, and Credit Card Payment Information fields all have real-time validation.
 
 ### Conditional Error Message
 
